@@ -15,8 +15,8 @@ state = ""
 total = 0 
 
 def formater (seconds):
-	string = "" 
-	second = seconds%60
+	string = ""
+	second = math.floor(seconds%60)
 	minute = int(math.floor(seconds/60))
 	string = "Time elapsed " + str(minute) + ":" + str(second) 
 	return string
@@ -58,5 +58,5 @@ def draw_label():
 	label.draw()
 
 pyglet.clock.schedule_interval(augment, 1)
-
+	
 pyglet.app.run()
