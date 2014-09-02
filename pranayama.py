@@ -8,6 +8,7 @@ inhale = 20
 exhale = 10
 apneia = 0
 
+#gets input from user
 def get_input():
 	global inhale, exhale, apneia
 	inhale = raw_input("How many seconds on the inhale?")
@@ -21,9 +22,7 @@ def get_input():
 		print "Input incorrect. Please try again"
 		get_input()
 
-
-get_input()
-totaltime = inhale + exhale + 2 * apneia
+#loads sound into memory
 sound = pyglet.resource.media('Bell.wav', streaming=False)
 
 
@@ -31,6 +30,7 @@ sound = pyglet.resource.media('Bell.wav', streaming=False)
 current = 0 
 state = "" 
 total = 0 
+record = 0
 
 #formats time
 def formater (seconds):
@@ -45,9 +45,9 @@ def hit_bell ():
 	sound.play()
 
 #augments time and updates state
-def augment (dt):
-	print dt	
-	global current, state, total, label
+def augment (dt):	
+	offset = (dt -1) * 1000
+	global current, state, total, label, record
 	#updates clock by augmenting it one unit
 	current = current%totaltime 
 	current += 1 
@@ -68,9 +68,12 @@ def augment (dt):
 		if (current == inhale + apneia + exhale + 1) :
 			hit_bell()
 		state = "Apnea"
-	print str(current) + " " + str(state) + "                               " + formater(total),
+	if (offset > record):
+		record = offset
+	print str(current) + " " + str(state) + "                               " + formater(total) + " Off by " + str(math.trunc(offset)) + " miliseconds" + " Max error: " + str(math.trunc(record))
 	draw_label()
 
+#Opens window
 window = pyglet.window.Window()
 
 def draw_label():
@@ -82,7 +85,13 @@ def draw_label():
 	window.clear()
 	label.draw()
 
+#Gets input from user
+get_input()
+totaltime = inhale + exhale + 2 * apneia
+
+
 #calls augment every second
 pyglet.clock.schedule_interval(augment, 1)
-	
+
+#initializes loop
 pyglet.app.run()
